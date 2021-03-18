@@ -2,7 +2,7 @@
  * @author Jesstina Farrell, Elizabeth Porter, Zack Starrett, Jaclyn Bramlette
  * @Team Anonymoose
  * 
- * This class generates a random password. Passwords genertated will be ten characters
+ * This class generates a random password. Passwords genertated will be 16 characters
  * and must contain at least one number, one uppercase letter, one lowercase letter
  * and one special character.
  * 
