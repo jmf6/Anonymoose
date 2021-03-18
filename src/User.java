@@ -19,4 +19,15 @@ public class User {
 			return false;
 		}
 	}
+
+	public boolean registering(String login, String password) {
+		//check the presence of a login in the map
+		if (users.get(login) != null) {
+			return false;
+		} else {
+			//add a new combination of login and password
+			users.put(login, password);
+			return true;
+		}
+	}
 }
