@@ -2,16 +2,30 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.bson.BSONObject;
+import org.bson.BasicBSONObject;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
+import com.mongodb.client.DistinctIterable;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 
 public class Database {
 
@@ -25,30 +39,100 @@ public class Database {
 	static MongoDatabase uniquePassDB = mongoClient.getDatabase("uniquepass");
 	//The collection within the database being referenced
 	static MongoCollection<Document> collection = uniquePassDB.getCollection("users");
+	
+	
+	//Returns a HashMap of all users currently registered in the database and their login passwords.
+	public static HashMap<String,String> getAllUsersAndPasswords(){
+		
+		//Create an ArrayList of all currently registered users...
+		ArrayList<String> emails = new ArrayList<String>();
+		MongoCursor<String> emailCursor = collection.distinct("email", String.class).iterator();
+		try {
+			while (emailCursor.hasNext()) {
+				emails.add(emailCursor.next());
+			}
+		} finally {
+			emailCursor.close();
+		}
+		
+		//Create an ArrayList of all currently registered users' passwords...
+		ArrayList<String> passwords = new ArrayList<String>();
+		MongoCursor<String> passwordCursor = collection.distinct("password", String.class).iterator();
+		try {
+			while (passwordCursor.hasNext()) {
+				passwords.add(passwordCursor.next());
+			}
+		} finally {
+			passwordCursor.close();
+		}
+		
+		//Use the ArrayLists to create a HashMap of all user emails and passwords
+		HashMap<String,String> emailAndPasswordMap = new HashMap<String,String>();
+		for(int i = 0; i < emails.size(); i++) {
+			emailAndPasswordMap.put(emails.get(i), passwords.get(i));
+		}
+		return emailAndPasswordMap;
+	}
+	
+	public static void addNewPassword(String emailArg, String siteName, String sitePassword) {
+		DatabasePasswordEntry p = new DatabasePasswordEntry(siteName, sitePassword);
+		//collection.save(p);
+		
+		BasicDBObject listItem = (new BasicDBObject("siteName",siteName).append("sitePassword",sitePassword));
+		
+		uniquePassDB.getCollection("users").updateOne(
+				new BasicDBObject("email", emailArg),
+				new BasicDBObject("$push", new BasicDBObject("storedPasswords", listItem))
+				);
+		
+	}
+	
+	
+	//Returns a HashMap of all the stored website names and passwords as key-value pairs for a specified user.
+	//Returns an empty HashMap if the specified user was not found.
+	public static HashMap<String,String> getAllPasswordsForUser(String emailArg){
+		
+		HashMap<String,String> websitesAndPasswordsMap = new HashMap<String,String>();
+		
+		Document myDoc = collection.find(Filters.eq("email", emailArg)).first();
+		BasicDBObject d = new BasicDBObject(myDoc);
+		Gson gson = new Gson();
+		DatabaseUserEntry user = gson.fromJson(d.toString(), DatabaseUserEntry.class);
+		
+		for(DatabasePasswordEntry p : user.getStoredPasswords()) {
+			websitesAndPasswordsMap.put(p.getSiteName(), p.getPassword());
+		}
+		
+		return websitesAndPasswordsMap;
+	}
 
-	//Creates a new user within the database collection, also creates an empty HashMap to store future passwords
-	public static void createNewUser(String emailAddressArg) {
+	//Creates and saves a new user within the database collection.
+	//Need to check for valid email and password
+	public static void createNewUser(String emailAddressArg, String userPasswordArg) {
 		Document newUser  = new Document("_id", new ObjectId());
 		newUser.append("email", emailAddressArg)
-		.append("passwords", new HashMap<String, String>());
+		.append("password", userPasswordArg)
+		.append("storedPasswords", new ArrayList<>());
 		collection.insertOne(newUser);
 	}
 
-	//Removes the user with the given email address and all of their stored passwords
+	//Removes the user with the given email address and all of their stored passwords.
 	public static void deleteUser(String userEmailArg) {
 		collection.deleteOne(Filters.eq("email", userEmailArg));
 	}
 
+	/*
 	//Updates a password given the user's email address, website of password to be updated, and the new password
 	//If the given website is not already registered, it will register the website.
-	public static void updatePasswords(String emailArg, String websiteArg, String newPasswordArg) {
+	public static void updateUserPassword(String emailArg, String websiteArg, String newPasswordArg) {
 		uniquePassDB.getCollection("users").updateOne(
 				new BasicDBObject("email", emailArg),
-				new BasicDBObject("$set", new BasicDBObject("passwords."+websiteArg, newPasswordArg))
+				new BasicDBObject("$set", new BasicDBObject("storedPasswords."+websiteArg, newPasswordArg))
 				);
 	}
-
-	//Prints all stored user email addresses and passwords
+	*/
+	
+	//Prints all values for all users currently stored in the database
 	public static void printAllValues() {
 		MongoCursor<Document> cursor = collection.find().iterator();
 		try {
@@ -62,18 +146,31 @@ public class Database {
 
 	//Main method for testing
 	public static void main(String[] args) {
+		
+		HashMap<String,String> h = getAllUsersAndPasswords();
+		for (Map.Entry<String, String> set : h.entrySet()) {
+		    System.out.println(set.getKey() + " = " + set.getValue());
+		}
+		
+		HashMap<String,String> g = getAllPasswordsForUser("Testing");
+		for (Map.Entry<String, String> set : g.entrySet()) {
+		    System.out.println(set.getKey() + " = " + set.getValue());
+		}
+		
+		//Gson gson = new Gson();
 
-		System.out.println("First Entry: " + collection.find().first().toJson());
-
-		//updatePasswords("sample@website.com", "website5", "test5");
+		//createNewUser("Testing", "Testing");
+		//addNewPassword("Testing", "email2", "password2");
+		
+		//updatePasswords("sample email", "website5", "test5");
 
 		//Create and insert a new user to the database
-		//createNewUser("sample email");
+		//createNewUser("sample email3", "sample password3");
 
 		//Delete user from the database
-		//deleteUser("sample email");
+		//deleteUser("sample@website.com");
 
-		printAllValues();  
+		//printAllValues();  
 
 	}
 }
