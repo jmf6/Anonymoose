@@ -66,6 +66,7 @@ public class User {
 				case "0":
 					return;
 			}
+			in.close();
 		}
 	}
 
