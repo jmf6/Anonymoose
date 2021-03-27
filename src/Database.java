@@ -42,6 +42,8 @@ public class Database {
 	
 	
 	//Returns a HashMap of all users currently registered in the database and their login passwords.
+	
+	//BUG: Passwords are not always saved in the right order -- need to fix this
 	public static HashMap<String,String> getAllUsersAndPasswords(){
 		
 		//Create an ArrayList of all currently registered users...
@@ -75,8 +77,6 @@ public class Database {
 	}
 	
 	public static void addNewPassword(String emailArg, String siteName, String sitePassword) {
-		DatabasePasswordEntry p = new DatabasePasswordEntry(siteName, sitePassword);
-		//collection.save(p);
 		
 		BasicDBObject listItem = (new BasicDBObject("siteName",siteName).append("sitePassword",sitePassword));
 		
@@ -84,7 +84,6 @@ public class Database {
 				new BasicDBObject("email", emailArg),
 				new BasicDBObject("$push", new BasicDBObject("storedPasswords", listItem))
 				);
-		
 	}
 	
 	
@@ -124,6 +123,8 @@ public class Database {
 	/*
 	//Updates a password given the user's email address, website of password to be updated, and the new password
 	//If the given website is not already registered, it will register the website.
+	//This method broke when I changed how password entries are stored -- need to fix this.
+	
 	public static void updateUserPassword(String emailArg, String websiteArg, String newPasswordArg) {
 		uniquePassDB.getCollection("users").updateOne(
 				new BasicDBObject("email", emailArg),
@@ -152,10 +153,14 @@ public class Database {
 		    System.out.println(set.getKey() + " = " + set.getValue());
 		}
 		
-		HashMap<String,String> g = getAllPasswordsForUser("Testing");
+		HashMap<String,String> g = getAllPasswordsForUser("Testing 2");
 		for (Map.Entry<String, String> set : g.entrySet()) {
 		    System.out.println(set.getKey() + " = " + set.getValue());
 		}
+		
+		//createNewUser("Testing 3","Password 3");
+		
+		//addNewPassword("Testing 2", "test website 4", "test password 4");
 		
 		//Gson gson = new Gson();
 
