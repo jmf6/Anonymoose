@@ -42,7 +42,6 @@ public class Database {
 	
 	
 	//Returns a HashMap of all users currently registered in the database and their login passwords.
-	
 	//BUG: Passwords are not always saved in the right order -- need to fix this
 	public static HashMap<String,String> getAllUsersAndPasswords(){
 		
@@ -76,6 +75,7 @@ public class Database {
 		return emailAndPasswordMap;
 	}
 	
+	//Adds a new PasswordEntry object within the database for the given user, with the given siteName and sitePassword.
 	public static void addNewPassword(String emailArg, String siteName, String sitePassword) {
 		
 		BasicDBObject listItem = (new BasicDBObject("siteName",siteName).append("sitePassword",sitePassword));
