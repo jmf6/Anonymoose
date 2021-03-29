@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import com.google.gson.Gson;
@@ -107,19 +108,25 @@ public class Database {
 	public static void deleteUser(String userEmailArg) {
 		collection.deleteOne(Filters.eq("email", userEmailArg));
 	}
-
-	/*
-	//Updates a password given the user's email address, website of password to be updated, and the new password
-	//If the given website is not already registered, it will register the website.
-	//This method broke when I changed how password entries are stored -- need to fix this.
 	
-	public static void updateUserPassword(String emailArg, String websiteArg, String newPasswordArg) {
+	
+	//Deletes one password entry for the provided user at the provided siteName.
+	public static void deletePassword(String emailArg, String siteArg) {
+		BasicDBObject listItem = (new BasicDBObject("siteName",siteArg));
 		uniquePassDB.getCollection("users").updateOne(
 				new BasicDBObject("email", emailArg),
-				new BasicDBObject("$set", new BasicDBObject("storedPasswords."+websiteArg, newPasswordArg))
+				new BasicDBObject("$pull", new BasicDBObject("storedPasswords", listItem))
 				);
 	}
-	*/
+
+	
+	//Updates a password given the user's email address, website of password to be updated, and the new password
+	//If the given website is not already registered, it will register the website.
+	public static void updateUserPassword(String emailArg, String websiteArg, String newPasswordArg) {
+		deletePassword(emailArg, websiteArg);
+		addNewPassword(emailArg, websiteArg, newPasswordArg);
+	}
+	
 	
 	//Prints all values for all users currently stored in the database
 	public static void printAllValues() {
@@ -145,6 +152,10 @@ public class Database {
 		for (Map.Entry<String, String> set : g.entrySet()) {
 		    System.out.println(set.getKey() + " = " + set.getValue());
 		}
+		
+		//updateUserPassword("Testing 2", "test website 2", "new test password 2");
+		
+		//deletePassword("Testing 2", "test website 3");
 		
 		//createNewUser("Testing 3","Password 3");
 		
