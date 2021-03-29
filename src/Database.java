@@ -31,36 +31,20 @@ public class Database {
 	
 	
 	//Returns a HashMap of all users currently registered in the database and their login passwords.
-	//BUG: Passwords are not always saved in the right order -- need to fix this
 	public static HashMap<String,String> getAllUsersAndPasswords(){
-		
-		//Create an ArrayList of all currently registered users...
-		ArrayList<String> emails = new ArrayList<String>();
-		MongoCursor<String> emailCursor = collection.distinct("email", String.class).iterator();
-		try {
-			while (emailCursor.hasNext()) {
-				emails.add(emailCursor.next());
-			}
-		} finally {
-			emailCursor.close();
-		}
-		
-		//Create an ArrayList of all currently registered users' passwords...
-		ArrayList<String> passwords = new ArrayList<String>();
-		MongoCursor<String> passwordCursor = collection.distinct("password", String.class).iterator();
-		try {
-			while (passwordCursor.hasNext()) {
-				passwords.add(passwordCursor.next());
-			}
-		} finally {
-			passwordCursor.close();
-		}
-		
-		//Use the ArrayLists to create a HashMap of all user emails and passwords
 		HashMap<String,String> emailAndPasswordMap = new HashMap<String,String>();
-		for(int i = 0; i < emails.size(); i++) {
-			emailAndPasswordMap.put(emails.get(i), passwords.get(i));
+		Gson gson = new Gson();
+
+		MongoCursor<Document> cursor = collection.find().iterator();
+		try {
+			while (cursor.hasNext()) {
+				DatabaseUserEntry user = gson.fromJson(cursor.next().toJson(), DatabaseUserEntry.class);
+				emailAndPasswordMap.put(user.getEmail(), user.getPassword());
+			}
+		} finally {
+			cursor.close();
 		}
+	
 		return emailAndPasswordMap;
 	}
 	
@@ -141,15 +125,19 @@ public class Database {
 	}
 
 	//Main method for testing
+	/*
 	public static void main(String[] args) {
 		
-		HashMap<String,String> h = getAllUsersAndPasswords();
-		for (Map.Entry<String, String> set : h.entrySet()) {
-		    System.out.println(set.getKey() + " = " + set.getValue());
-		}
+		//createNewUser("Test Email New", "TestPasswordNew");
 		
 		HashMap<String,String> g = getAllPasswordsForUser("Testing 2");
 		for (Map.Entry<String, String> set : g.entrySet()) {
+		    System.out.println(set.getKey() + " = " + set.getValue());
+		}
+		
+		System.out.println("-------");
+		HashMap<String,String> i = getAllUsersAndPasswords();
+		for (Map.Entry<String, String> set : i.entrySet()) {
 		    System.out.println(set.getKey() + " = " + set.getValue());
 		}
 		
@@ -157,16 +145,6 @@ public class Database {
 		
 		//deletePassword("Testing 2", "test website 3");
 		
-		//createNewUser("Testing 3","Password 3");
-		
-		//addNewPassword("Testing 2", "test website 4", "test password 4");
-		
-		//Gson gson = new Gson();
-
-		//createNewUser("Testing", "Testing");
-		//addNewPassword("Testing", "email2", "password2");
-		
-		//updatePasswords("sample email", "website5", "test5");
 
 		//Create and insert a new user to the database
 		//createNewUser("sample email3", "sample password3");
@@ -177,6 +155,7 @@ public class Database {
 		//printAllValues();  
 
 	}
+	*/
 }
 
 
