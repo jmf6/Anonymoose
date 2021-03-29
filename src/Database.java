@@ -30,7 +30,7 @@ public class Database {
 	static MongoCollection<Document> collection = uniquePassDB.getCollection("users");
 	
 	
-	//Returns a HashMap of all users currently registered in the database and their login passwords.
+	//Returns a HashMap of all users currently registered in the database and their login passwords as key-value pairs.
 	public static HashMap<String,String> getAllUsersAndPasswords(){
 		HashMap<String,String> emailAndPasswordMap = new HashMap<String,String>();
 		Gson gson = new Gson();
@@ -78,8 +78,7 @@ public class Database {
 		return websitesAndPasswordsMap;
 	}
 
-	//Creates and saves a new user within the database collection.
-	//Need to check for valid email and password
+	//Creates and saves a new user within the database collection, with the given emailAddress and userPassword.
 	public static void createNewUser(String emailAddressArg, String userPasswordArg) {
 		Document newUser  = new Document("_id", new ObjectId());
 		newUser.append("email", emailAddressArg)
@@ -88,15 +87,15 @@ public class Database {
 		collection.insertOne(newUser);
 	}
 
-	//Removes the user with the given email address and all of their stored passwords.
+	//Removes the user with the given email address from the database and all of their stored passwords.
 	public static void deleteUser(String userEmailArg) {
 		collection.deleteOne(Filters.eq("email", userEmailArg));
 	}
 	
 	
-	//Deletes one password entry for the provided user at the provided siteName.
-	public static void deletePassword(String emailArg, String siteArg) {
-		BasicDBObject listItem = (new BasicDBObject("siteName",siteArg));
+	//Deletes one passwordEntry from the database for the provided user at the provided siteName.
+	public static void deletePassword(String emailArg, String siteNameArg) {
+		BasicDBObject listItem = (new BasicDBObject("siteName",siteNameArg));
 		uniquePassDB.getCollection("users").updateOne(
 				new BasicDBObject("email", emailArg),
 				new BasicDBObject("$pull", new BasicDBObject("storedPasswords", listItem))
@@ -104,7 +103,7 @@ public class Database {
 	}
 
 	
-	//Updates a password given the user's email address, website of password to be updated, and the new password
+	//Updates a password given the user's email address, website of password to be updated, and the new password.
 	//If the given website is not already registered, it will register the website.
 	public static void updateUserPassword(String emailArg, String websiteArg, String newPasswordArg) {
 		deletePassword(emailArg, websiteArg);
@@ -112,7 +111,7 @@ public class Database {
 	}
 	
 	
-	//Prints all values for all users currently stored in the database
+	//Prints all values for all users currently stored in the database in JSON format.
 	public static void printAllValues() {
 		MongoCursor<Document> cursor = collection.find().iterator();
 		try {
