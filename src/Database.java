@@ -31,12 +31,10 @@ public class Database {
 	
 	
 	public Database() {
-		
 	}
 	
-	
 	//Returns a HashMap of all users currently registered in the database and their login passwords as key-value pairs.
-	public HashMap<String,String> getAllUsersAndPasswords(){
+	public static HashMap<String,String> getAllUsersAndPasswords(){
 		HashMap<String,String> emailAndPasswordMap = new HashMap<String,String>();
 		Gson gson = new Gson();
 
@@ -54,7 +52,7 @@ public class Database {
 	}
 	
 	//Adds a new PasswordEntry object within the database for the given user, with the given siteName and sitePassword.
-	public void addNewPassword(String loginArg, String siteName, String sitePassword) {
+	public static void addNewPassword(String loginArg, String siteName, String sitePassword) {
 		
 		BasicDBObject listItem = (new BasicDBObject("siteName",siteName).append("sitePassword",sitePassword));
 		
@@ -67,7 +65,7 @@ public class Database {
 	
 	//Returns a HashMap of all the stored website names and passwords as key-value pairs for a specified user.
 	//Returns an empty HashMap if the specified user was not found.
-	public HashMap<String,String> getAllPasswordsForUser(String loginArg){
+	public static HashMap<String,String> getAllPasswordsForUser(String loginArg){
 		
 		HashMap<String,String> websitesAndPasswordsMap = new HashMap<String,String>();
 		
@@ -84,7 +82,7 @@ public class Database {
 	}
 
 	//Creates and saves a new user within the database collection, with the given emailAddress and userPassword.
-	public void createNewUser(String loginArg, String userPasswordArg) {
+	public static void createNewUser(String loginArg, String userPasswordArg) {
 		Document newUser  = new Document("_id", new ObjectId());
 		newUser.append("email", loginArg)
 		.append("password", userPasswordArg)
@@ -93,13 +91,13 @@ public class Database {
 	}
 
 	//Removes the user with the given email address from the database and all of their stored passwords.
-	public void deleteUser(String loginArg) {
+	public static void deleteUser(String loginArg) {
 		collection.deleteOne(Filters.eq("email", loginArg));
 	}
 	
 	
 	//Deletes one passwordEntry from the database for the provided user at the provided siteName.
-	public void deletePassword(String loginArg, String siteNameArg) {
+	public static void deletePassword(String loginArg, String siteNameArg) {
 		BasicDBObject listItem = (new BasicDBObject("siteName",siteNameArg));
 		uniquePassDB.getCollection("users").updateOne(
 				new BasicDBObject("email", loginArg),
@@ -110,13 +108,13 @@ public class Database {
 	
 	//Updates a password given the user's email address, website of password to be updated, and the new password.
 	//If the given website is not already registered, it will register the website.
-	public void updateUserPassword(String loginArg, String websiteArg, String newPasswordArg) {
+	public static void updateUserPassword(String loginArg, String websiteArg, String newPasswordArg) {
 		deletePassword(loginArg, websiteArg);
 		addNewPassword(loginArg, websiteArg, newPasswordArg);
 	}
 	
 	//Returns true if the given login and password arguments exist for a user in the database.
-	public boolean validLogin(String loginArg, String passwordArg) {
+	public static boolean validLogin(String loginArg, String passwordArg) {
 		HashMap<String,String> emailAndPasswordMap = getAllUsersAndPasswords();
 		for (Map.Entry<String, String> set : emailAndPasswordMap.entrySet()) {
 			if(set.getKey().equals(loginArg) && set.getValue().equals(passwordArg)) {
@@ -128,7 +126,7 @@ public class Database {
 	
 	
 	//Prints all values for all users currently stored in the database in JSON format.
-	public  void printAllValues() {
+	public static void printAllValues() {
 		MongoCursor<Document> cursor = collection.find().iterator();
 		try {
 			while (cursor.hasNext()) {
@@ -140,27 +138,25 @@ public class Database {
 	}
 
 	//Main method for testing
-	
+
 	public static void main(String[] args) {
-		
-		Database d = new Database();
-		
+			
 		//d.createNewUser("New Test", "New Test 2");
 		
 		//d.addNewPassword("New Test", "NewSite2", "NewPass2");
 		
-		HashMap<String,String> g = d.getAllPasswordsForUser("New Test");
+		HashMap<String,String> g = Database.getAllPasswordsForUser("New Test");
 		for (Map.Entry<String, String> set : g.entrySet()) {
 		    System.out.println(set.getKey() + " = " + set.getValue());
 		}
 		
 		System.out.println("-------");
-		HashMap<String,String> i = d.getAllUsersAndPasswords();
+		HashMap<String,String> i = Database.getAllUsersAndPasswords();
 		for (Map.Entry<String, String> set : i.entrySet()) {
 		    System.out.println(set.getKey() + " = " + set.getValue());
 		}
 		
-		System.out.println(d.validLogin("Testing 2","Password 2"));
+		System.out.println(Database.validLogin("Testing 2","Password 2"));
 		
 
 		//Create and insert a new user to the database
