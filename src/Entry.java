@@ -36,7 +36,6 @@ public class Entry {
 		this.hash = hash;
 	}
 	
-	//using the password as a hash until I get the hashing figured out
 	private void createPassword(PasswordGenerator p) {
 		setHash(String.valueOf(p.passwordGen()));
 	}
