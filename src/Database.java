@@ -143,8 +143,6 @@ public class Database {
 	
 	public static void main(String[] args) {
 		
-		//createNewUser("Test Email New", "TestPasswordNew");
-		
 		Database d = new Database();
 		
 		//d.createNewUser("New Test", "New Test 2");
@@ -164,16 +162,12 @@ public class Database {
 		
 		System.out.println(d.validLogin("Testing 2","Password 2"));
 		
-		//updateUserPassword("Testing 2", "test website 2", "new test password 2");
-		
-		//deletePassword("Testing 2", "test website 3");
-		
 
 		//Create and insert a new user to the database
-		//createNewUser("sample email3", "sample password3");
+		//d.createNewUser("sample email", "sample password");
 
 		//Delete user from the database
-		//deleteUser("sample@website.com");
+		//d.deleteUser("sample email");
 
 		//printAllValues();  
 
