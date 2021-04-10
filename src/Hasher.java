@@ -23,11 +23,11 @@ public class Hasher {
 	
 	}
 	
-	public static SecretKey getSecretKey() {
+	public SecretKey getSecretKey() {
 		return secretKey;
 	}
 	
-	public static IvParameterSpec getIV() {
+	public IvParameterSpec getIV() {
 		return spec;
 	}
 	
@@ -64,7 +64,7 @@ public class Hasher {
 	}
 	
 	//Runs encrypt function
-	public static String runEncrypt(String encodeMe) throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+	public String runEncrypt(String encodeMe) throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 		String cipherText;
 		secretKey = createSecretKey();
 		spec = generateIV();
@@ -74,7 +74,7 @@ public class Hasher {
 	}
 	
 	//Runs decrypt function
-	public static String runDecrypt(String decodeMe) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException {
+	public String runDecrypt(String decodeMe) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException {
 		String plainText;
 		SecretKey key = getSecretKey();
 		IvParameterSpec iv = getIV();
@@ -83,6 +83,7 @@ public class Hasher {
 		return plainText;
 	}
 	
+	/*
 	//Main function to test, comment out when done
 	public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 		
@@ -91,7 +92,7 @@ public class Hasher {
 		System.out.println(cipherText);
 		System.out.println(plainText);
 
-	}
+	}*/
 
 
 }
