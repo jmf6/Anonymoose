@@ -3,11 +3,12 @@ import java.util.Scanner;
 public class Main {
 	
 	public static void main(String[]args) {
-		//Database db;
+		Database db = new Database();
 		Scanner scnr = new Scanner(System.in);
 		String userInput;
 		String username;
 		String passwordInput;
+		HashMap<String,String> emailAndPasswordMap = db.getAllUsersAndPasswords();
 
 		System.out.println("Welcome to the Anonymoose Password Manager");
 		System.out.println("Enter 1 or L to login, enter 2 or C to create an account: ");
@@ -27,8 +28,8 @@ public class Main {
 				username = scnr.nextLine();
 				System.out.println("Enter your password: "); //need a way to not show password while user is typing
 				passwordInput = scnr.nextLine();
-
-				//check for valid login
+				//hash password
+				db.validLogin(username,passwordInput);
 
 				break;
 			case "2":
@@ -36,19 +37,24 @@ public class Main {
 			case "C":
 				System.out.println("Enter your email address: ");
 				username = scnr.nextLine();
-				//check if email is in use
+				db.usernameFree(username); //if !free prompt again
 				System.out.println("Enter your password: ");
 				userInput = scnr.nextLine();
+				//hash password
 				System.out.println("Confirm your password: ");
 				passwordInput = scnr.nextLine();
-				
+				//hash password
 				if(userInput == passwordInput){
-					//db.createNewUser(username, passwordInput);
+					db.createNewUser(username, passwordInput);
 				}
 				else{
 					System.out.println("Passwords do not match");
 				}
-				break; 
+				break;
 		}
+
+		//menu to display options
+		//
+		//
 	}
 }
