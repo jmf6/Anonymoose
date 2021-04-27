@@ -113,6 +113,17 @@ public class Database {
 		addNewPassword(loginArg, websiteArg, newPasswordArg);
 	}
 	
+	//Returns true if the given username does not already exist in the database.
+	public boolean usernameFree(String loginArg) {
+		HashMap<String,String> emailAndPasswordMap = getAllUsersAndPasswords();
+		for (Map.Entry<String, String> set : emailAndPasswordMap.entrySet()) {
+			if(set.getKey().equals(loginArg)){
+				return false;
+			}
+		}
+		return true;	
+	}
+	
 	//Returns true if the given login and password arguments exist for a user in the database.
 	public boolean validLogin(String loginArg, String passwordArg) {
 		HashMap<String,String> emailAndPasswordMap = getAllUsersAndPasswords();
