@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {
@@ -7,7 +8,7 @@ public class Main {
 		Scanner scnr = new Scanner(System.in);
 		char selection;
 		String userInput;
-		String username;
+		String username = "";
 		String passwordInput;
 		HashMap<String,String> emailAndPasswordMap = db.getAllUsersAndPasswords();
 
@@ -16,7 +17,7 @@ public class Main {
 
 		selection = scnr.next().charAt(0);
 		
-		while(selection != '1' || selection != 'l' || selection != 'L' || selection != '2' || selection != 'c' || selection != 'C'){
+		while(selection != '1' && selection != 'l' && selection != 'L' && selection != '2' && selection != 'c' && selection != 'C'){
 			System.out.println("Invalid option. Enter 1 or L to login, enter 2 or C to create a new account: ");
 			userInput = scnr.nextLine();
 		}
