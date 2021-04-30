@@ -89,6 +89,7 @@ public class Main {
 				//These passwords will need to be dehashed (everything in the hashmap Value set)
 				HashMap<String,String> userEntries = db.getAllPasswordsForUser(username);
 
+				//Display everything in console
 				for (Map.Entry<String, String> set : userEntries.entrySet()) {
 					System.out.println("Site Name: " + set.getKey());
 					System.out.println("Site Password: " + set.getValue());
