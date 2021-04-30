@@ -29,9 +29,10 @@ public class Main {
 			case '1':
 			case 'l':
 			case 'L':
-				System.out.println("Enter your username: ");
+				System.out.print("Enter your username: ");
+				scnr.next();
 				username = scnr.nextLine();
-				System.out.println("Enter your password: "); //need a way to not show password while user is typing
+				System.out.print("Enter your password: "); //need a way to not show password while user is typing
 				passwordInput = scnr.nextLine();
 				//hash password
 				if(db.validLogin(username,passwordInput)){
@@ -107,7 +108,13 @@ public class Main {
 					selection = scnr.next().charAt(0);
 					if(selection != 'y' && selection != 'n'){
 						passwordInput = String.valueOf(p.passwordGen());
-						System.out.println("Your password for " + site + " is: " + passwordInput);
+						System.out.print("Your password for " + site + " is: " + passwordInput);
+						try{
+							Thread.sleep(20000);
+						}
+						catch(Exception e){}
+						System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+						System.out.println();
 						//hash passwordInput here
 						//passwordInput = passwordInput hashed
 						db.addNewPassword(username, site, passwordInput);
@@ -135,6 +142,12 @@ public class Main {
 					if(selection == 'g'){
 						passwordInput = String.valueOf(p.passwordGen());
 						System.out.println("Your new password for " + site + " is: " + passwordInput);
+						try{
+                                                        Thread.sleep(20000);
+                                                }
+                                                catch(Exception e){}
+                                                System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+                                                System.out.println();
 						//hash passwordInput here
 						//passwordInput = passwordInput hashed
 						db.updateUserPassword(username, site, passwordInput);
