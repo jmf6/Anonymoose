@@ -141,7 +141,7 @@ public class Main {
 					selection = scnr.next().charAt(0);
 					if(selection == 'g'){
 						passwordInput = String.valueOf(p.passwordGen());
-						System.out.println("Your new password for " + site + " is: " + passwordInput);
+						System.out.print("Your new password for " + site + " is: " + passwordInput);
 						try{
                                                         Thread.sleep(20000);
                                                 }
