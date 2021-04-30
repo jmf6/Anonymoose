@@ -8,7 +8,7 @@ public class Main {
 		Database db = new Database();
 		Scanner scnr = new Scanner(System.in);
 		PasswordGenerator p = new PasswordGenerator();
-		char selection = '';
+		char selection = ' ';
 		String site = "";
 		String userInput = "";
 		String username = "";
@@ -106,7 +106,7 @@ public class Main {
 					System.out.println("Would you like to generate a new random password? Enter y for yes, enter n for no: ");
 					selection = scnr.next().charAt(0);
 					if(selection != 'y' && selection != 'n'){
-						passwordInput = String.valueOf(p.PasswordGen());
+						passwordInput = String.valueOf(p.passwordGen());
 						System.out.println("Your password for " + site + " is: " + passwordInput);
 						//hash passwordInput here
 						//passwordInput = passwordInput hashed
@@ -133,7 +133,7 @@ public class Main {
 					System.out.println("Enter g if you would like to randomly generate a password, enter any other key to set your own password: ");
 					selection = scnr.next().charAt(0);
 					if(selection == 'g'){
-						passwordInput = String.valueOf(p.PasswordGen());
+						passwordInput = String.valueOf(p.passwordGen());
 						System.out.println("Your new password for " + site + " is: " + passwordInput);
 						//hash passwordInput here
 						//passwordInput = passwordInput hashed
@@ -152,14 +152,15 @@ public class Main {
 					}
 					break;
 				
-				case default:
+				default:
 					selection = 'x';
 					System.out.println("Goodbye.");
 					System.exit(0);
 		
 			}
 		}while(selection != 'x');
+		System.exit(0);
 	}
 
-	System.exit(0);
+	
 }
