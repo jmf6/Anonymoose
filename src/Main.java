@@ -148,6 +148,7 @@ public class Main {
 					if(selection == 'y'){
 						db.deleteUser(username);
 						System.out.println("Your account has been deleted");
+						System.out.println("Goodbye.");
 					}
 					break;
 				
