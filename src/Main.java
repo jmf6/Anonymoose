@@ -86,7 +86,7 @@ public class Main {
 
 		switch(selection){
 			case '1': 
-				//These passwords will need to be dehashed
+				//These passwords will need to be dehashed (everything in the hashmap Value set)
 				HashMap<String,String> userEntries = db.getAllPasswordsForUser(username);
 
 				for (Map.Entry<String, String> set : userEntries.entrySet()) {
