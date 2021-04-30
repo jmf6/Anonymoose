@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -88,10 +89,12 @@ public class Main {
 				HashMap<String,String> userEntries = db.getAllPasswordsForUser(username);
 
 				//figure out how to iterate through hashmap and print values
-				//for(something something something){
-				//	System.out.println("Site name: " + something something here);
-				//	System.out.println("Password: " + something something here);
-				//}
+				for (Map.Entry<String, String> set : userEntries.entrySet()) {
+					System.out.println("Site Name: " + set.getKey());
+					System.out.println("Site Password: " + set.getValue());
+					System.out.println("");
+				}
+				
 				break;
 			case '2':
 				System.out.println("Would you like to generate a new random password? Enter y for yes, enter n for no: ");
