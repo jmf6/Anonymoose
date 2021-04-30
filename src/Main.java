@@ -86,9 +86,9 @@ public class Main {
 
 		switch(selection){
 			case '1': 
+				//These passwords will need to be dehashed
 				HashMap<String,String> userEntries = db.getAllPasswordsForUser(username);
 
-				//figure out how to iterate through hashmap and print values
 				for (Map.Entry<String, String> set : userEntries.entrySet()) {
 					System.out.println("Site Name: " + set.getKey());
 					System.out.println("Site Password: " + set.getValue());
