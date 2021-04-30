@@ -98,11 +98,21 @@ public class Database {
 	
 	//Deletes one passwordEntry from the database for the provided user at the provided siteName.
 	public void deletePassword(String loginArg, String siteNameArg) {
-		BasicDBObject listItem = (new BasicDBObject("siteName",siteNameArg));
-		uniquePassDB.getCollection("users").updateOne(
-				new BasicDBObject("email", loginArg),
-				new BasicDBObject("$pull", new BasicDBObject("storedPasswords", listItem))
-				);
+		
+		HashMap<String, String> temp = getAllPasswordsForUser(loginArg);
+		for (Map.Entry<String, String> set : temp.entrySet()) {
+		    if(set.getKey().equals(siteNameArg)) {
+				BasicDBObject listItem = (new BasicDBObject("siteName",siteNameArg));
+				uniquePassDB.getCollection("users").updateOne(
+						new BasicDBObject("email", loginArg),
+						new BasicDBObject("$pull", new BasicDBObject("storedPasswords", listItem))
+						);
+				return;
+		    }
+		}
+		
+		System.out.println("The requested site name was not found.");
+
 	}
 
 	
@@ -155,6 +165,8 @@ public class Database {
 		Database d = new Database();
 			
 		//d.createNewUser("New Test", "New Test 2");
+		
+		d.deletePassword("Testing 2", "test website 4");
 		
 		//d.addNewPassword("New Test", "NewSite2", "NewPass2");
 		
