@@ -147,12 +147,13 @@ public class PasswordGenerator {
 		
 	}
 	
+	/*
 	//Main to test the class. comment out when done
 	public static void main(String[] args) {
 		PasswordGenerator pass = new PasswordGenerator();
 		char passy[] = pass.passwordGen();
 		System.out.println(passy);
-	}
+	}*/
 	
 	
 	

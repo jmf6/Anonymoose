@@ -1,10 +1,22 @@
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 public class Main {
 	
-	public static void main(String[]args) {
+	public static void main(String[]args) throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 		Database db = new Database();
 		Scanner scnr = new Scanner(System.in);
 		PasswordGenerator p = new PasswordGenerator();
@@ -64,10 +76,18 @@ public class Main {
 				System.out.println("Enter your password: ");
 				userInput = scnr.nextLine();
 				//hash password
+				Hasher hash1 = new Hasher();
+				userInput = hash1.runEncrypt(userInput);
+				SecretKey key1 = hash1.getSecretKey();
+				IvParameterSpec spec1 = hash1.getIV();
+				//System.out.println(userInput);
 				System.out.println("Confirm your password: ");
 				passwordInput = scnr.nextLine();
 				//hash password
-				if(userInput == passwordInput){
+				String algorithm = "AES/CBC/PKCS5Padding";
+				passwordInput = hash1.encrypt(algorithm, passwordInput, key1, spec1);
+				//System.out.println(passwordInput);
+				if(userInput.equals(passwordInput)){
 					db.createNewUser(username, passwordInput);
 					System.out.println("Account created.");
 				}
@@ -90,12 +110,20 @@ public class Main {
 			switch(selection){
 				case '1': 
 					//These passwords will need to be dehashed (everything in the hashmap Value set)
-					HashMap<String,String> userEntries = db.getAllPasswordsForUser(username);
+					HashMap<String, ArrayList<Object>> userEntries = db.getAllPasswordsForUser(username);
 
 					//Display everything in console
-					for (Map.Entry<String, String> set : userEntries.entrySet()) {
+					for (Entry<String, ArrayList<Object>> set : userEntries.entrySet()) {
 						System.out.println("Site Name: " + set.getKey());
-						System.out.println("Site Password: " + set.getValue()); //dehash as passwords print
+						ArrayList<Object> ob = set.getValue();
+						System.out.println(ob);
+						SecretKey key1 = (SecretKey) ob.get(1);
+						IvParameterSpec spec1 = (IvParameterSpec) ob.get(2);
+						String cipher = (String) ob.get(0);
+						Hasher hash7 = new Hasher();
+						String algorithm = "AES/CBC/PKCS5Padding";
+						String un = hash7.decrypt(algorithm, cipher, key1, spec1);
+						System.out.println("Site Password: " + un); //dehash as passwords print
 						System.out.println("");
 					}
 					break;
@@ -110,13 +138,23 @@ public class Main {
 						System.out.println("Your password for " + site + " is: " + passwordInput);
 						//hash passwordInput here
 						//passwordInput = passwordInput hashed
-						db.addNewPassword(username, site, passwordInput);
+						Hasher hash2 = new Hasher();
+						passwordInput = hash2.runEncrypt(passwordInput);
+						SecretKey key2 = hash2.getSecretKey();
+						IvParameterSpec spec2 = hash2.getIV();
+						//Password passwordIn = new Password(passwordInput, key2, spec2);
+						//System.out.println(key2);
+						db.addNewPassword(username, site, passwordInput, key2, spec2);
 					}
 					else{
 						System.out.println("Enter the password: ");
 						passwordInput = scnr.nextLine(); 
-						//passwordInput = passwordInput hashed 
-						db.addNewPassword(username, site, passwordInput);
+						//passwordInput = passwordInput hashed
+						Hasher hash2 = new Hasher();
+						passwordInput = hash2.runEncrypt(passwordInput);
+						SecretKey key2 = hash2.getSecretKey();
+						IvParameterSpec spec2 = hash2.getIV();
+						db.addNewPassword(username, site, passwordInput, key2, spec2);
 					}
 					break;
 				
@@ -137,7 +175,11 @@ public class Main {
 						System.out.println("Your new password for " + site + " is: " + passwordInput);
 						//hash passwordInput here
 						//passwordInput = passwordInput hashed
-						db.updateUserPassword(username, site, passwordInput);
+						Hasher hash4 = new Hasher();
+						passwordInput = hash4.runEncrypt(passwordInput);
+						SecretKey key4 = hash4.getSecretKey();
+						IvParameterSpec spec4 = hash4.getIV();
+						db.updateUserPassword(username, site, passwordInput, key4, spec4);
 						System.out.println("Your password has been updated successfully.");
 					}
 					break;

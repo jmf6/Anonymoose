@@ -1,20 +1,29 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 
 public class Database {
 
@@ -22,10 +31,12 @@ public class Database {
 	static ConnectionString connString = new ConnectionString(
 			"mongodb+srv://anonymooseadmin:D6cTw6PxjSDGnkMf@cluster0.q4jee.mongodb.net/UniquePass?retryWrites=true&w=majority"
 			);
+	static CodecRegistry pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+            fromProviders(PojoCodecProvider.builder().automatic(true).build()));
 	//MongoClient object that connects the Java application to MongoDB
 	static MongoClient mongoClient = MongoClients.create(connString);
 	//The database object being referenced
-	static MongoDatabase uniquePassDB = mongoClient.getDatabase("uniquepass");
+	static MongoDatabase uniquePassDB = mongoClient.getDatabase("uniquepass").withCodecRegistry(pojoCodecRegistry);;
 	//The collection within the database being referenced
 	static MongoCollection<Document> collection = uniquePassDB.getCollection("users");
 	
@@ -52,11 +63,12 @@ public class Database {
 	}
 	
 	//Adds a new PasswordEntry object within the database for the given user, with the given siteName and sitePassword.
-	public void addNewPassword(String loginArg, String siteName, String sitePassword) {
+	public void addNewPassword(String loginArg, String siteName, String sitePassword, SecretKey key, IvParameterSpec spec) {
 		
-		BasicDBObject listItem = (new BasicDBObject("siteName",siteName).append("sitePassword",sitePassword));
-		
-		uniquePassDB.getCollection("users").updateOne(
+		BasicDBObject listItem = (new BasicDBObject("siteName",siteName).append("sitePassword",sitePassword).append("secretkey", key).append("spec", spec));
+		//System.out.println("___________");
+		//System.out.println(key);
+		uniquePassDB.getCollection("users").updateMany(
 				new BasicDBObject("email", loginArg),
 				new BasicDBObject("$push", new BasicDBObject("storedPasswords", listItem))
 				);
@@ -65,17 +77,23 @@ public class Database {
 	
 	//Returns a HashMap of all the stored website names and passwords as key-value pairs for a specified user.
 	//Returns an empty HashMap if the specified user was not found.
-	public HashMap<String,String> getAllPasswordsForUser(String loginArg){
+	public HashMap<String,ArrayList<Object>> getAllPasswordsForUser(String loginArg){
 		
-		HashMap<String,String> websitesAndPasswordsMap = new HashMap<String,String>();
+		HashMap<String,ArrayList<Object>> websitesAndPasswordsMap = new HashMap<String,ArrayList<Object>>();
 		
 		Document myDoc = collection.find(Filters.eq("email", loginArg)).first();
 		BasicDBObject d = new BasicDBObject(myDoc);
 		Gson gson = new Gson();
 		DatabaseUserEntry user = gson.fromJson(d.toString(), DatabaseUserEntry.class);
-		
+		ArrayList<Object> passes = new ArrayList<Object>();
 		for(DatabasePasswordEntry p : user.getStoredPasswords()) {
-			websitesAndPasswordsMap.put(p.getSiteName(), p.getPassword());
+			SecretKey h = p.getKeys();
+			//System.out.println(h);
+			passes.add(p.getPassword());
+			passes.add(h);
+			passes.add(p.getSpec());
+			//System.out.println(passes);
+			websitesAndPasswordsMap.put(p.getSiteName(), passes);
 		}
 		
 		return websitesAndPasswordsMap;
@@ -99,8 +117,8 @@ public class Database {
 	//Deletes one passwordEntry from the database for the provided user at the provided siteName.
 	public void deletePassword(String loginArg, String siteNameArg) {
 		
-		HashMap<String, String> temp = getAllPasswordsForUser(loginArg);
-		for (Map.Entry<String, String> set : temp.entrySet()) {
+		HashMap<String, ArrayList<Object>> temp = getAllPasswordsForUser(loginArg);
+		for (Map.Entry<String, ArrayList<Object>> set : temp.entrySet()) {
 		    if(set.getKey().equals(siteNameArg)) {
 				BasicDBObject listItem = (new BasicDBObject("siteName",siteNameArg));
 				uniquePassDB.getCollection("users").updateOne(
@@ -118,9 +136,9 @@ public class Database {
 	
 	//Updates a password given the user's email address, website of password to be updated, and the new password.
 	//If the given website is not already registered, it will register the website.
-	public void updateUserPassword(String loginArg, String websiteArg, String newPasswordArg) {
+	public void updateUserPassword(String loginArg, String websiteArg, String newPasswordArg, SecretKey key, IvParameterSpec spec) {
 		deletePassword(loginArg, websiteArg);
-		addNewPassword(loginArg, websiteArg, newPasswordArg);
+		addNewPassword(loginArg, websiteArg, newPasswordArg, key, spec);
 	}
 	
 	//Returns true if the given username does not already exist in the database.
@@ -170,8 +188,8 @@ public class Database {
 		
 		//d.addNewPassword("New Test", "NewSite2", "NewPass2");
 		
-		HashMap<String,String> g = d.getAllPasswordsForUser("New Test");
-		for (Map.Entry<String, String> set : g.entrySet()) {
+		HashMap<String, ArrayList<Object>> g = d.getAllPasswordsForUser("New Test");
+		for (Entry<String, ArrayList<Object>> set : g.entrySet()) {
 		    System.out.println(set.getKey() + " = " + set.getValue());
 		}
 		
