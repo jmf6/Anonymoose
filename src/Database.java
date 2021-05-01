@@ -134,6 +134,17 @@ public class Database {
 		return true;	
 	}
 	
+	public boolean passwordUsed(String loginArg, String passwordArg) {
+		
+		HashMap<String,String> g = getAllPasswordsForUser("loginArg");
+		for (Map.Entry<String, String> set : g.entrySet()) {
+		    if(set.getValue().equals(passwordArg)) {
+		    	return true;
+		    }
+		}
+		return false;
+	}
+	
 	//Returns true if the given login and password arguments exist for a user in the database.
 	public boolean validLogin(String loginArg, String passwordArg) {
 		HashMap<String,String> emailAndPasswordMap = getAllUsersAndPasswords();
