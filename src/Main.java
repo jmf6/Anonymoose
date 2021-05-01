@@ -99,35 +99,48 @@ public class Main {
 					break;
 				
 				case '2':
-					System.out.print("Enter the site name: ");
-					site = scnr.next();
-					System.out.println("Would you like to generate a new random password? Enter y for yes, enter any other key for no: ");
-					selection = scnr.next().charAt(0);
-					if(selection == 'y'){
-						passwordInput = String.valueOf(p.passwordGen());
-						//check for reused password
-						//generate new password if needed
-						System.out.print("Your password for " + site + " is: " + passwordInput);
-						try{
-							Thread.sleep(20000);
-						}
-						catch(Exception e){}
-						
-						for(int i = 0; i  < 20000; i++) {
-							System.out.println();
-						}
+                                        System.out.print("Enter the site name: ");
+                                        site = scnr.next();
+                                        System.out.println("Would you like to generate a new random password? Enter y for yes, enter any other key for no: ");
+                                        selection = scnr.next().charAt(0);
+                                        if(selection == 'y'){
+                                                passwordInput = String.valueOf(p.passwordGen());
+                                                if(db.passwordUsed(username, passwordInput)){
+                                                        passwordInput = String.valueOf(p.passwordGen());
+                                                }
+                                                System.out.print("Your password for " + site + " is: " + passwordInput);
+                                                try{
+                                                        Thread.sleep(20000);
+                                                }
+                                                catch(Exception e){}
 
-						System.out.println();
-						db.addNewPassword(username, site, passwordInput);
-					}
-					else{
-						System.out.print("Enter the password: ");
-						passwordInput = scnr.next(); 
-						//check for reused password
-						//give option to enter new password or generate password
-						db.addNewPassword(username, site, passwordInput);
-					}
-					break;
+                                                for(int i = 0; i  < 20000; i++) {
+                                                        System.out.println();
+                                                }
+
+                                                System.out.println();
+                                                db.addNewPassword(username, site, passwordInput);
+                                        }
+                                        else{
+                                                System.out.println("Enter the password: ");
+                                                passwordInput = scnr.nextLine();
+                                                if(db.passwordUsed(username, passwordInput)){
+                                                        System.out.println("The password is already being used on another site.");
+                                                        while(db.passwordUsed(username, passwordInput)){
+                                                                System.out.print("Would you like the program to generate a new password? Enter y for yes, enter any other key for no: ");
+                                                                selection = scnr.next().charAt(0);
+                                                                if(selection == 'y'){
+                                                                        passwordInput = String.valueOf(p.passwordGen());
+                                                                }
+                                                                else{
+                                                                        System.out.print("Enter the new password: ");
+                                                                        passwordInput = scnr.next();
+                                                                }
+                                                        }
+                                                }
+                                                db.addNewPassword(username, site, passwordInput);
+                                        }
+                                        break;
 				
 				case '3':
 					System.out.print("Enter the site that you would like to delete the password for: ");
@@ -175,7 +188,5 @@ public class Main {
 			}
 		}while(selection != 'x');
 		System.exit(0);
-	}
-
-	
+	}	
 }
