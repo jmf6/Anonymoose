@@ -22,3 +22,9 @@ src/Username.java: Class File - This class stores username information and a sec
 src/Main.java: Main Application File - This file is the main program that is run
 
 pom.xml: Maven Project Object Model file that handles dependency version control. Responsible for managing the MongoDB drivers and gson plugin.
+
+Anonymoose Password Manager Installation Instructions.pdf - Guide for installing, compiling, and executing this program.
+
+Anonymoose Password Manager User Manual.pdf - Guide for running and managing the program.
+
+Final Project Report.pdf - Document reviewing the development process of this project, the expectations of the group, and future work to be done.
