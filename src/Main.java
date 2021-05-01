@@ -99,9 +99,8 @@ public class Main {
 					break;
 				
 				case '2':
-					System.out.println("Enter the site name: ");
-					scnr.next();
-					site = scnr.nextLine();
+					System.out.print("Enter the site name: ");
+					site = scnr.next();
 					System.out.println("Would you like to generate a new random password? Enter y for yes, enter any other key for no: ");
 					selection = scnr.next().charAt(0);
 					if(selection == 'y'){
@@ -113,13 +112,17 @@ public class Main {
 							Thread.sleep(20000);
 						}
 						catch(Exception e){}
-						System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+						
+						for(int i = 0; i  < 20000; i++) {
+							System.out.println();
+						}
+
 						System.out.println();
 						db.addNewPassword(username, site, passwordInput);
 					}
 					else{
-						System.out.println("Enter the password: ");
-						passwordInput = scnr.nextLine(); 
+						System.out.print("Enter the password: ");
+						passwordInput = scnr.next(); 
 						//check for reused password
 						//give option to enter new password or generate password
 						db.addNewPassword(username, site, passwordInput);
@@ -127,17 +130,15 @@ public class Main {
 					break;
 				
 				case '3':
-					System.out.println("Enter the site that you would like to delete the password for: ");
-					scnr.next();
-					site = scnr.nextLine();
+					System.out.print("Enter the site that you would like to delete the password for: ");
+					site = scnr.next();
 					db.deletePassword(username, site);
 					System.out.println("Password deleted.");
 					break;
 				
 				case '4':
-					System.out.println("Enter the site that you would like to update the password for: ");
-					scnr.next();
-					site = scnr.nextLine();
+					System.out.print("Enter the site that you would like to update the password for: ");
+					site = scnr.next();
 					System.out.println("Enter g if you would like to randomly generate a password, enter any other key to set your own password: ");
 					selection = scnr.next().charAt(0);
 					if(selection == 'g'){
@@ -147,7 +148,9 @@ public class Main {
                                                         Thread.sleep(20000);
                                                 }
                                                 catch(Exception e){}
-                                                System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+												for(int i = 0; i  < 20000; i++) {
+													System.out.println();
+												}
                                                 System.out.println();
 						db.updateUserPassword(username, site, passwordInput);
 						System.out.println("Your password has been updated successfully.");
