@@ -3,8 +3,6 @@ The Anonymoose Password Manager is an application that allows users to store pas
 
 # Repository Contents
 
-pom.xml: Maven Project Object Model file that handles dependency version control. Responsible for managing the MongoDB drivers and gson plugin.
-
 src/Database.java: Class File - This class interacts with the web hosted database and uses functions in the DatabasePasswordEntry and DatabaseUserEntry classes to retrieve information 
 
 src/DatabasePasswordEntry.java: Class File - This class performs all interactions that involve user passwords
@@ -22,3 +20,5 @@ src/User.java: Class File - This class stores user information for users that ha
 src/Username.java: Class File - This class stores username information and a secret key for de-hashing
 
 src/Main.java: Main Application File - This file is the main program that is run
+
+pom.xml: Maven Project Object Model file that handles dependency version control. Responsible for managing the MongoDB drivers and gson plugin.
