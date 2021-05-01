@@ -52,8 +52,8 @@ public class Main {
 			case '2':
 			case 'c':
 			case 'C':
-				System.out.println("Enter your email address: ");
-				username = scnr.nextLine();
+				System.out.print("Enter your email address: ");
+				username = scnr.next();
 
 				if(!db.usernameFree(username)){
 					while(!db.usernameFree(username)){
@@ -62,12 +62,12 @@ public class Main {
 					}
 				}
 
-				System.out.println("Enter your password: ");
-				userInput = scnr.nextLine();
-				System.out.println("Confirm your password: ");
-				passwordInput = scnr.nextLine();
+				System.out.print("Enter your password: ");
+				userInput = scnr.next();
+				System.out.print("Confirm your password: ");
+				passwordInput = scnr.next();
 				
-				if(userInput == passwordInput){
+				if(userInput.equals(passwordInput)){
 					db.createNewUser(username, passwordInput);
 					System.out.println("Account created.");
 				}
