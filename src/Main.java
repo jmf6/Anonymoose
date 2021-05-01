@@ -32,9 +32,9 @@ public class Main {
 				System.out.print("Enter your username: ");
 				scnr.next();
 				username = scnr.nextLine();
-				System.out.print("Enter your password: "); //need a way to not show password while user is typing
+				System.out.print("Enter your password: ");
 				passwordInput = scnr.nextLine();
-				//hash password
+			
 				if(db.validLogin(username,passwordInput)){
 					System.out.println("Login successful");
 				}
@@ -64,10 +64,9 @@ public class Main {
 
 				System.out.println("Enter your password: ");
 				userInput = scnr.nextLine();
-				//hash password
 				System.out.println("Confirm your password: ");
 				passwordInput = scnr.nextLine();
-				//hash password
+				
 				if(userInput == passwordInput){
 					db.createNewUser(username, passwordInput);
 					System.out.println("Account created.");
@@ -90,24 +89,25 @@ public class Main {
 
 			switch(selection){
 				case '1': 
-					//These passwords will need to be dehashed (everything in the hashmap Value set)
 					HashMap<String,String> userEntries = db.getAllPasswordsForUser(username);
 
-					//Display everything in console
 					for (Map.Entry<String, String> set : userEntries.entrySet()) {
 						System.out.println("Site Name: " + set.getKey());
-						System.out.println("Site Password: " + set.getValue()); //dehash as passwords print
+						System.out.println("Site Password: " + set.getValue());
 						System.out.println("");
 					}
 					break;
 				
 				case '2':
 					System.out.println("Enter the site name: ");
+					scnr.next();
 					site = scnr.nextLine();
 					System.out.println("Would you like to generate a new random password? Enter y for yes, enter n for no: ");
 					selection = scnr.next().charAt(0);
 					if(selection != 'y' && selection != 'n'){
 						passwordInput = String.valueOf(p.passwordGen());
+						//check for reused password
+						//generate new password if needed
 						System.out.print("Your password for " + site + " is: " + passwordInput);
 						try{
 							Thread.sleep(20000);
@@ -115,20 +115,20 @@ public class Main {
 						catch(Exception e){}
 						System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 						System.out.println();
-						//hash passwordInput here
-						//passwordInput = passwordInput hashed
 						db.addNewPassword(username, site, passwordInput);
 					}
 					else{
 						System.out.println("Enter the password: ");
 						passwordInput = scnr.nextLine(); 
-						//passwordInput = passwordInput hashed 
+						//check for reused password
+						//give option to enter new password or generate password
 						db.addNewPassword(username, site, passwordInput);
 					}
 					break;
 				
 				case '3':
 					System.out.println("Enter the site that you would like to delete the password for: ");
+					scnr.next();
 					site = scnr.nextLine();
 					db.deletePassword(username, site);
 					System.out.println("Password deleted.");
@@ -136,6 +136,7 @@ public class Main {
 				
 				case '4':
 					System.out.println("Enter the site that you would like to update the password for: ");
+					scnr.next();
 					site = scnr.nextLine();
 					System.out.println("Enter g if you would like to randomly generate a password, enter any other key to set your own password: ");
 					selection = scnr.next().charAt(0);
@@ -148,8 +149,6 @@ public class Main {
                                                 catch(Exception e){}
                                                 System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
                                                 System.out.println();
-						//hash passwordInput here
-						//passwordInput = passwordInput hashed
 						db.updateUserPassword(username, site, passwordInput);
 						System.out.println("Your password has been updated successfully.");
 					}
