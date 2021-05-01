@@ -102,9 +102,9 @@ public class Main {
 					System.out.println("Enter the site name: ");
 					scnr.next();
 					site = scnr.nextLine();
-					System.out.println("Would you like to generate a new random password? Enter y for yes, enter n for no: ");
+					System.out.println("Would you like to generate a new random password? Enter y for yes, enter any other key for no: ");
 					selection = scnr.next().charAt(0);
-					if(selection != 'y' && selection != 'n'){
+					if(selection == 'y'){
 						passwordInput = String.valueOf(p.passwordGen());
 						//check for reused password
 						//generate new password if needed
